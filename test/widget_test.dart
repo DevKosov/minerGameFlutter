@@ -7,14 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tp02/Demineur.dart';
+import 'package:tp02/Controller/Miner.dart';
 
 import 'package:tp02/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(Demineur());
+    await tester.pumpWidget(Miner());
 
   });
 }

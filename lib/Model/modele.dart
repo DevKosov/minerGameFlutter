@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'DifficultyLevel.dart';
 
 // Les coordonnées d'une case de la grille
 class Coordonnees {
@@ -20,6 +21,13 @@ class Case {
 }
 // Type d'action qu'un joueur peut réaliser sur une case
 enum Action { decouvrir, marquer }
+
+// Difficulte
+final List<DifficultyLevel> difficultyLevels = [
+    DifficultyLevel(level: "Easy", taille: 5, nbMines: 4),
+    DifficultyLevel(level: "Intermediate", taille: 7, nbMines: 10),
+    DifficultyLevel(level: "Expert", taille: 10, nbMines: 15),
+];
 
 // Coup réalisé par le joueur
 class Coup {

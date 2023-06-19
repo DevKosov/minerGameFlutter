@@ -1,6 +1,6 @@
-# tp02
+# Miner Game with Flutter
 
-A new Flutter project.
+First flutter project.
 
 ## Getting Started
 

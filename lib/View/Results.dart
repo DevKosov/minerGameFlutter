@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:tp02/modele.dart';
+import 'package:tp02/Model/modele.dart';
 
-class Resultat extends StatelessWidget {
+class Results extends StatelessWidget {
 
   final void Function() toAccueil;
   final Stopwatch stopwatch;
+  final String username;
   final Grille grille;
   // Constructeur
-  const Resultat({
+  const Results({
     super.key,
     required this.toAccueil,
     required this.stopwatch,
+    required this.username,
     required this.grille,
   });
 
@@ -18,7 +20,7 @@ class Resultat extends StatelessWidget {
   @override
   Widget build(context) {
 
-    String gameStatus = grille.isPerdue() ? "LOLOLOL you Lost SO BAD!" : (grille.isGagnee() ? "You've WON!!! POGU" : "");
+    String gameStatus = grille.isPerdue() ? "$username, you're so BAAAAD!" : (grille.isGagnee() ? "${username}, you've WON!!! POGU" : "");
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,

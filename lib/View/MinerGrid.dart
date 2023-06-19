@@ -1,15 +1,15 @@
 
 import 'package:flutter/material.dart';
-import 'package:tp02/modele.dart' as modele;
+import 'package:tp02/Model/modele.dart' as modele;
 
-import 'modele.dart';
+import '../Model/modele.dart';
 
-class GrilleDemineur extends StatefulWidget {
+class MinerGrid extends StatefulWidget {
   Grille grille;
 
   final void Function() onFinishGame;
 
-  GrilleDemineur({
+  MinerGrid({
     super.key,
     required this.grille,
     required this.onFinishGame,
@@ -18,7 +18,7 @@ class GrilleDemineur extends StatefulWidget {
   State<StatefulWidget> createState() => _GrilleDemineur();
 }
 
-class _GrilleDemineur extends State<GrilleDemineur> {
+class _GrilleDemineur extends State<MinerGrid> {
   late modele.Grille _grille;
   @override
   void initState() {
