@@ -37,62 +37,68 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  Widget build(context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'Miner Game',
-            style: TextStyle(
-              color: Color.fromARGB(255, 237, 223, 252),
-              fontSize: 24,
-            ),
-          ),
-          const SizedBox(height: 30),
-          TextField(
-            controller: _textController,
-            keyboardType: TextInputType.text,
-            maxLength: 40,
-            decoration: const InputDecoration(
-              suffixText: '',
-              label: Text('Username'),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _username = value;
-              });
-            },
-          ),
-          DropdownButton(
-            value: _selectedDifficulty ?? widget.difficultyLevel,
-            items: difficultyLevels?.map((difficulty) =>
-              DropdownMenuItem<DifficultyLevel>(
-                value: difficulty,
-                child: Text(
-                  difficulty.level.toUpperCase(),
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Demineur")
+        ),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Miner Game',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 237, 223, 252),
+                  fontSize: 24,
                 ),
               ),
-            ).toList(),
-            onChanged: (value) {
-              if (value == null) {
-                return ;
-              }
-              setState((){
-                _selectedDifficulty = value ;
-              });
-              widget.choisirDifficulte(value) ;
-            },
+              const SizedBox(height: 30),
+              TextField(
+                controller: _textController,
+                keyboardType: TextInputType.text,
+                maxLength: 40,
+                decoration: const InputDecoration(
+                  suffixText: '',
+                  label: Text('Username'),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _username = value;
+                  });
+                },
+              ),
+              DropdownButton(
+                value: _selectedDifficulty ?? widget.difficultyLevel,
+                items: difficultyLevels?.map((difficulty) =>
+                    DropdownMenuItem<DifficultyLevel>(
+                      value: difficulty,
+                      child: Text(
+                        difficulty.level.toUpperCase(),
+                      ),
+                    ),
+                ).toList(),
+                onChanged: (value) {
+                  if (value == null) {
+                    return ;
+                  }
+                  setState((){
+                    _selectedDifficulty = value ;
+                  });
+                  widget.choisirDifficulte(value) ;
+                },
+              ),
+              ElevatedButton(
+                  onPressed: _username.isEmpty ? null : () {
+                    widget.play(_username);
+                  },
+                  child: Text("Play")
+              ),
+            ],
           ),
-          ElevatedButton(
-              onPressed: _username.isEmpty ? null : () {
-                widget.play(_username);
-              },
-              child: Text("Play")
-          ),
-        ],
-      ),
+        ),
+      )
     );
   }
 }
-

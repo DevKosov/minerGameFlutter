@@ -28,10 +28,11 @@ class _GrilleDemineur extends State<MinerGrid> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Demineur',
         home: Scaffold(
-          appBar: AppBar(title: Text('Demineur tp2')),
-          body: Column(
+          appBar: AppBar(
+            title: const Text("Play"),
+          ),
+        body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -45,30 +46,30 @@ class _GrilleDemineur extends State<MinerGrid> {
                         width: 50.0, // Set the desired width
                         height: 50.0, // Set the desired height
                         margin: const EdgeInsets.all(0.5),
-                       child:
-                       ElevatedButton(
-                         onPressed: (){
-                           setState(() {
-                             if (!_grille.isFinie()) {
-                               jouerCoup(x, y, modele.Action.decouvrir);
-                             }
-                           });
-                         },
-                         onLongPress: () {
-                           setState(() {
-                             if (!_grille.isFinie()) {
-                               jouerCoup(x, y,modele.Action.marquer);
-                             }
-                           });
-                         },
-                         style: ElevatedButton.styleFrom(
-                           backgroundColor: caseToColor(_grille.getCase(modele.Coordonnees(x,y))), // Background color
-                           padding: const EdgeInsets.all(10.0),
-                         ),
-                         child: Text(
-                             caseToText(_grille.getCase(modele.Coordonnees(x,y)),_grille.isFinie())
-                         ),
-                       ),
+                        child:
+                        ElevatedButton(
+                          onPressed: (){
+                            setState(() {
+                              if (!_grille.isFinie()) {
+                                jouerCoup(x, y, modele.Action.decouvrir);
+                              }
+                            });
+                          },
+                          onLongPress: () {
+                            setState(() {
+                              if (!_grille.isFinie()) {
+                                jouerCoup(x, y,modele.Action.marquer);
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: caseToColor(_grille.getCase(modele.Coordonnees(x,y))), // Background color
+                            padding: const EdgeInsets.all(10.0),
+                          ),
+                          child: Text(
+                              caseToText(_grille.getCase(modele.Coordonnees(x,y)),_grille.isFinie())
+                          ),
+                        ),
                       )
                     ],
                   ],
@@ -76,14 +77,15 @@ class _GrilleDemineur extends State<MinerGrid> {
               ],
               Container(
                 margin: const EdgeInsets.only(top:20),
-              child:
+                child:
                 Text(
                     messageEtat(_grille)
                 ),
               )
             ]
-          ),
-        ));
+        )
+      )
+    );
   }
   String caseToText(modele.Case laCase, bool isFini) {
     if (!isFini){

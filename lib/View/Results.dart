@@ -21,25 +21,33 @@ class Results extends StatelessWidget {
   Widget build(context) {
 
     String gameStatus = grille.isPerdue() ? "$username, you're so BAAAAD!" : (grille.isGagnee() ? "${username}, you've WON!!! POGU" : "");
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            gameStatus,
-            style: TextStyle(
-              color: Color.fromARGB(255, 237, 223, 252),
-              fontSize: 24,
-            ),
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Results"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                gameStatus,
+                style: TextStyle(
+                  color: Color.fromARGB(255, 237, 223, 252),
+                  fontSize: 24,
+                ),
+              ),
+              const SizedBox(height: 30),
+              Text("You've taken ${_formatDuration(stopwatch.elapsed)}!"),
+              ElevatedButton(
+                  onPressed: toAccueil,
+                  child: const Text("Go Back")
+              )
+            ],
           ),
-          const SizedBox(height: 30),
-          Text("You've taken ${_formatDuration(stopwatch.elapsed)}!"),
-          ElevatedButton(
-              onPressed: toAccueil,
-              child: const Text("Go Back")
-          )
-        ],
-      ),
+        ),
+      )
     );
   }
   String _formatDuration(Duration duration) {

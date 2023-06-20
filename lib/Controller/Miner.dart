@@ -21,7 +21,6 @@ enum ScreenState {accueil, grille, resultat}
 
 class _MinerState extends State<Miner> {
 
-  ScreenState     _screenState        = ScreenState.accueil;
   final Stopwatch _stopwatch          = Stopwatch();
   DifficultyLevel _difficultyLevel    = difficultyLevels[0];
   late Grille     _grille ;
@@ -38,58 +37,47 @@ class _MinerState extends State<Miner> {
   void play(String username) {
     setState(() {
       _username = username;
-      _screenState = ScreenState.grille;
       _grille = Grille(_difficultyLevel.taille, _difficultyLevel.nbMines);
       _stopwatch.start();
     });
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => MinerGrid(
+          grille: _grille,
+          onFinishGame: showResults,
+        ),
+      ),
+    );
   }
 
   // finir la partie
   void showResults() {
     setState(() {
       _stopwatch.stop();
-      _screenState = ScreenState.resultat;
     });
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => Results(
+          toAccueil : toAccueil,
+          stopwatch : _stopwatch,
+          username : _username ?? "",
+          grille : _grille,
+        ),
+      ),
+    );
   }
   //
   // //restart
   void toAccueil() {
     setState(() {
-      _screenState = ScreenState.accueil; // on va afficher QuestionScreen
       _stopwatch.reset();
     });
+    Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
   }
-
-  // Retourne le widget à afficher selon l'état (valeur de screenState)
-  Widget chooseScreenWidget() {
-    switch (_screenState) {
-      case ScreenState.accueil:
-        {
-          return Home(choisirDifficulte, play, difficultyLevels, _difficultyLevel, _username ?? "");
-        }
-      case ScreenState.grille:
-        {
-          return MinerGrid(
-            grille: _grille,
-            onFinishGame: showResults,
-          );
-        }
-      case ScreenState.resultat:
-        {
-          return Results(
-            toAccueil : toAccueil,
-            stopwatch : _stopwatch,
-            username : _username ?? "",
-            grille : _grille,
-          );
-        }
-    }
-  }
-
 
   // Construction de l'UI du Widget
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         body: Container(
@@ -103,7 +91,7 @@ class _MinerState extends State<Miner> {
               end: Alignment.bottomRight,
             ),
           ),
-          child: chooseScreenWidget(),
+          child: Home(choisirDifficulte, play, difficultyLevels, _difficultyLevel, _username ?? ""),
         ),
       ),
     );
