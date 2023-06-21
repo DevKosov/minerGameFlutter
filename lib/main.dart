@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tp02/Controller/Miner.dart';
 
 void main() {
-  runApp(const MinerApp());
+  runApp(const ProviderScope(child: MinerApp()));
 }
 
 class MinerApp extends StatelessWidget {

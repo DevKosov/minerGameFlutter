@@ -1,43 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tp02/Model/DifficultyLevel.dart';
+import 'package:tp02/Provider/DifficultyProvider.dart';
+import 'package:tp02/Provider/GrilleProvider.dart';
+import 'package:tp02/Provider/UsernameProvider.dart';
+
+import 'MinerGrid.dart';
 
 
-class Home extends StatefulWidget {
-
-  final void Function(DifficultyLevel difficultyLevel) choisirDifficulte;
-  final void Function(String username) play;
-  final List<DifficultyLevel> difficultyLevels;
-  final DifficultyLevel difficultyLevel;
-  final String username;
-
+class Home extends ConsumerWidget {
   // Constructeur
-  const Home(this.choisirDifficulte,
-      this.play,
-      this.difficultyLevels,
-      this.difficultyLevel,
-      this.username,
-      {super.key});
+  Home({
+    super.key
+  });
 
-  @override
-  _HomeState createState() => _HomeState();
-}
-class _HomeState extends State<Home> {
-  List<DifficultyLevel>? difficultyLevels ;
-  DifficultyLevel? _selectedDifficulty ;
-  late String _username;
-  final _textController = TextEditingController();
-  // Construction de l'UI du Widget StartScreen
+  void play(BuildContext context, WidgetRef ref){
 
-  @override
-  void initState() {
-    super.initState();
-    _textController.text = widget.username;
-    difficultyLevels = widget.difficultyLevels;
-    _username = widget.username ?? "";
+    ref.read(grilleProvider.notifier).initGrille(ref.read(difficultyProvider).difficultyLevel);
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => MinerGrid(),
+      ),
+    );
   }
 
+  Difficulty? _selectedDifficulty ;
+  late String _username;
+  final _textController = TextEditingController();
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+
+    _username = ref.watch(usernameProvider);
+    _selectedDifficulty = ref.watch(difficultyProvider);
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -64,18 +61,17 @@ class _HomeState extends State<Home> {
                   label: Text('Username'),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    _username = value;
-                  });
+                  ref.read(usernameProvider.notifier).changeUsername(value);
                 },
               ),
               DropdownButton(
-                value: _selectedDifficulty ?? widget.difficultyLevel,
-                items: difficultyLevels?.map((difficulty) =>
-                    DropdownMenuItem<DifficultyLevel>(
+                value: _selectedDifficulty,
+
+                items: Difficulty.values.map((difficulty) =>
+                    DropdownMenuItem<Difficulty>(
                       value: difficulty,
                       child: Text(
-                        difficulty.level.toUpperCase(),
+                        difficulty.difficultyLevel.level.toString().toUpperCase(),
                       ),
                     ),
                 ).toList(),
@@ -83,17 +79,14 @@ class _HomeState extends State<Home> {
                   if (value == null) {
                     return ;
                   }
-                  setState((){
-                    _selectedDifficulty = value ;
-                  });
-                  widget.choisirDifficulte(value) ;
+                  ref.read(difficultyProvider.notifier).changeDifficulty(value);
                 },
               ),
               ElevatedButton(
                   onPressed: _username.isEmpty ? null : () {
-                    widget.play(_username);
+                    play(context,ref);
                   },
-                  child: Text("Play")
+                  child: const Text("Play")
               ),
             ],
           ),

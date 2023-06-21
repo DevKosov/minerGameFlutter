@@ -3,24 +3,16 @@ import 'package:tp02/Model/modele.dart';
 
 class Results extends StatelessWidget {
 
-  final void Function() toAccueil;
-  final Stopwatch stopwatch;
-  final String username;
-  final Grille grille;
   // Constructeur
   const Results({
     super.key,
-    required this.toAccueil,
-    required this.stopwatch,
-    required this.username,
-    required this.grille,
   });
 
   // Construction de l'UI du Widget StartScreen
   @override
   Widget build(context) {
 
-    String gameStatus = grille.isPerdue() ? "$username, you're so BAAAAD!" : (grille.isGagnee() ? "${username}, you've WON!!! POGU" : "");
+    // String gameStatus = grille.isPerdue() ? "$username, you're so BAAAAD!" : (grille.isGagnee() ? "${username}, you've WON!!! POGU" : "");
 
     return MaterialApp(
       home: Scaffold(
@@ -32,18 +24,18 @@ class Results extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                gameStatus,
+                "gameStatus",
                 style: TextStyle(
                   color: Color.fromARGB(255, 237, 223, 252),
                   fontSize: 24,
                 ),
               ),
               const SizedBox(height: 30),
-              Text("You've taken ${_formatDuration(stopwatch.elapsed)}!"),
-              ElevatedButton(
-                  onPressed: toAccueil,
-                  child: const Text("Go Back")
-              )
+              // Text("You've taken ${_formatDuration(stopwatch.elapsed)}!"),
+              // ElevatedButton(
+              //     onPressed: toAccueil,
+              //     child: const Text("Go Back")
+              // )
             ],
           ),
         ),
