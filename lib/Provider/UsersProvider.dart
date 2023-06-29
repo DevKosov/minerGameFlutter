@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Model/User.dart';
 import '../Model/modele.dart';
 import '../Model/DifficultyLevel.dart';
@@ -8,9 +10,20 @@ import '../Model/DifficultyLevel.dart';
 final usersProvider = StateNotifierProvider<UsersNotifier, List<User>>((ref) => UsersNotifier());
 
 class UsersNotifier extends StateNotifier<List<User>> {
-  UsersNotifier() : super([]);
+  UsersNotifier() : super([]) {
+    loadUsers();
+  }
 
-  void addUser(String username, int score, Difficulty difficulty) {
+  Future<void> loadUsers() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final usersString = prefs.getString('users') ?? '[]';
+    final usersList = (jsonDecode(usersString) as List)
+        .map((userJson) => User.fromJson(userJson))
+        .toList();
+    state = usersList;
+  }
+
+  void addUser(String username, int score, Difficulty difficulty) async {
     bool userExists = false;
 
     state = state.map((oldUser) {
@@ -27,6 +40,11 @@ class UsersNotifier extends StateNotifier<List<User>> {
     if (!userExists) {
       state.add(User(username, score, 1, difficulty));
     }
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final usersString = jsonEncode(state.map((user) => user.toJson()).toList());
+    await prefs.setString('users', usersString);
+
   }
 }
 

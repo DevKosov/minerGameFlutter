@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tp02/Model/DifficultyLevel.dart';
 import 'package:tp02/Provider/DifficultyProvider.dart';
-import 'package:tp02/Provider/UsernameProvider.dart';
+import 'package:tp02/Provider/UsersProvider.dart';
 
 import '../Model/User.dart';
 import 'MinerGrid.dart';

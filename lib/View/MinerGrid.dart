@@ -5,7 +5,7 @@ import 'package:tp02/Model/DifficultyLevel.dart';
 import 'package:tp02/Model/modele.dart' as modele;
 import 'package:tp02/Provider/DifficultyProvider.dart';
 import '../Model/modele.dart';
-import '../Provider/UsernameProvider.dart';
+import '../Provider/UsersProvider.dart';
 import 'Results.dart';
 
 class MinerGrid extends ConsumerStatefulWidget {
