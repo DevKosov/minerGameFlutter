@@ -1,19 +1,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tp02/Model/DifficultyLevel.dart';
 import 'package:tp02/Model/modele.dart' as modele;
-import 'package:tp02/Provider/GrilleProvider.dart';
-
+import 'package:tp02/Provider/DifficultyProvider.dart';
 import '../Model/modele.dart';
+import '../Provider/UsernameProvider.dart';
 import 'Results.dart';
 
-class MinerGrid extends ConsumerWidget {
+class MinerGrid extends ConsumerStatefulWidget {
 
-  MinerGrid({
-    super.key,
+  final String username;
+
+  const MinerGrid({
+    super.key, required this.username,
   });
 
-  void onFinishGame(BuildContext context) {
+  void onFinishGame(BuildContext context,WidgetRef ref, int score) {
+
+    ref.read(usersProvider.notifier).addUser(username,score,ref.read(difficultyProvider));
+
+    Navigator.of(context).pop();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (ctx) => const Results(),
@@ -21,17 +28,32 @@ class MinerGrid extends ConsumerWidget {
     );
   }
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _MinerGrid();
+  }
+
+}
+
+// Riverpod : on hérite ici de ConsumerState
+class _MinerGrid extends ConsumerState<MinerGrid> {
   late Grille _grille;
+  final Stopwatch _stopwatch = Stopwatch();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _grille = Grille(ref.read(difficultyProvider).difficultyLevel.taille, ref.read(difficultyProvider).difficultyLevel.nbMines);  // Initialization
+    _stopwatch.start();
+  }
 
-    _grille = ref.watch(grilleProvider);
-
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
+        theme: ThemeData(useMaterial3: true),
         home: Scaffold(
             appBar: AppBar(
-              title: const Text("Play"),
+              title: const Center(child: Text("Play")),
             ),
             body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -51,14 +73,18 @@ class MinerGrid extends ConsumerWidget {
                             ElevatedButton(
                               onPressed: () {
                                 if (!_grille.isFinie()) {
-                                  ref.read(grilleProvider.notifier).jouerCoup(x,y,modele.Action.marquer);
-                                  checkEnding(context);
+                                  setState(() {
+                                    jouerCoup(context,x,y,modele.Action.decouvrir);
+                                  });
+                                  isFinished();
                                 }
                               },
                               onLongPress: () {
                                 if (!_grille.isFinie()) {
-                                  ref.read(grilleProvider.notifier).jouerCoup(x,y,modele.Action.marquer);
-                                  checkEnding(context);
+                                  setState(() {
+                                    jouerCoup(context,x,y,modele.Action.marquer);
+                                  });
+                                  isFinished();
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -81,7 +107,7 @@ class MinerGrid extends ConsumerWidget {
                   Container(
                     margin: const EdgeInsets.only(top: 20),
                     child:
-                    Text("Chose a case to mine!!!"),
+                    const Text("Chose a case to mine!!!"),
                   )
                 ]
             )
@@ -117,9 +143,31 @@ class MinerGrid extends ConsumerWidget {
     }
   }
 
-  void checkEnding(BuildContext context) {
-    if (_grille.isGagnee() || _grille.isPerdue()) {
-      onFinishGame(context);
+  void isFinished(){
+    if (_grille.isGagnee()) {
+      _stopwatch.stop();
+      widget.onFinishGame(context,ref,calculateScore(_stopwatch.elapsedMilliseconds));
+      _stopwatch.reset();
+    }
+    else if (_grille.isPerdue()){
+      _stopwatch.stop();
+      widget.onFinishGame(context,ref,0);
+      _stopwatch.reset();
+    }
+  }
+
+  void jouerCoup(context, x,y,action){
+    Coup coup = Coup(x, y, action);
+    _grille.mettreAJour(coup);
+  }
+
+  int calculateScore(timeInMilliseconds) {
+    if (timeInMilliseconds <= 10000) {
+      return 10000;
+    }
+    else{
+      return ((1000/timeInMilliseconds) * 10000).toInt();
     }
   }
 }
+

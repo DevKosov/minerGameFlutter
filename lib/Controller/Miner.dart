@@ -11,9 +11,8 @@ class Miner extends StatefulWidget{
   }
 
 }
-// Screen state
-enum ScreenState {accueil, grille, resultat}
 
+// Screen state
 class _MinerState extends State<Miner> {
   // Construction de l'UI du Widget
   @override

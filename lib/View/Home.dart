@@ -2,43 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tp02/Model/DifficultyLevel.dart';
 import 'package:tp02/Provider/DifficultyProvider.dart';
-import 'package:tp02/Provider/GrilleProvider.dart';
 import 'package:tp02/Provider/UsernameProvider.dart';
 
+import '../Model/User.dart';
 import 'MinerGrid.dart';
 
 
-class Home extends ConsumerWidget {
+class Home extends ConsumerStatefulWidget {
   // Constructeur
   Home({
     super.key
   });
 
-  void play(BuildContext context, WidgetRef ref){
-
-    ref.read(grilleProvider.notifier).initGrille(ref.read(difficultyProvider).difficultyLevel);
-
+  void play(BuildContext context, WidgetRef ref, String username) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (ctx) => MinerGrid(),
+        builder: (ctx) =>
+            MinerGrid(
+              username : username
+            ),
       ),
     );
   }
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _Home();
+  }
 
-  Difficulty? _selectedDifficulty ;
+}
+class _Home extends ConsumerState<Home> {
+
   late String _username;
   final _textController = TextEditingController();
+  late Difficulty _selectedDifficulty;
+  late List<User> _top3;
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _username = "";
+  }
 
-    _username = ref.watch(usernameProvider);
+  @override
+  Widget build(BuildContext context) {
+
     _selectedDifficulty = ref.watch(difficultyProvider);
+    _top3 = ref.watch(usersProviderTop3(_selectedDifficulty));
 
     return MaterialApp(
+      theme: ThemeData(useMaterial3: true),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("Demineur")
+          title: const Center(child: Text("Demineur")),
         ),
         body: Center(
           child: Column(
@@ -51,6 +66,16 @@ class Home extends ConsumerWidget {
                   fontSize: 24,
                 ),
               ),
+              // ListView(
+              //   children: [
+              //     for (var user in _top3) Card(child:ListTile(title:Text("${user.username} : ${user.score}")))
+              //   ],
+              // ),
+              Column(
+                  children: [
+                    for (var user in _top3) Text("${user.username} : ${user.score}")
+                  ],
+                ),
               const SizedBox(height: 30),
               TextField(
                 controller: _textController,
@@ -61,7 +86,9 @@ class Home extends ConsumerWidget {
                   label: Text('Username'),
                 ),
                 onChanged: (value) {
-                  ref.read(usernameProvider.notifier).changeUsername(value);
+                  setState(() {
+                    _username = value;
+                  });
                 },
               ),
               DropdownButton(
@@ -84,7 +111,7 @@ class Home extends ConsumerWidget {
               ),
               ElevatedButton(
                   onPressed: _username.isEmpty ? null : () {
-                    play(context,ref);
+                    widget.play(context,ref,_username);
                   },
                   child: const Text("Play")
               ),

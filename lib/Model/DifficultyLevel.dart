@@ -20,7 +20,7 @@ extension DifficultyExtension on Difficulty {
   DifficultyLevel get difficultyLevel {
     switch (this) {
       case Difficulty.easy:
-        return DifficultyLevel(level: "Easy", taille: 5, nbMines: 4);
+        return DifficultyLevel(level: "Easy", taille: 5, nbMines: 1);
       case Difficulty.intermediate:
         return DifficultyLevel(level: "Intermediate", taille: 7, nbMines: 10);
       case Difficulty.expert:

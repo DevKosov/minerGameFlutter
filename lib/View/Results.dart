@@ -15,15 +15,16 @@ class Results extends StatelessWidget {
     // String gameStatus = grille.isPerdue() ? "$username, you're so BAAAAD!" : (grille.isGagnee() ? "${username}, you've WON!!! POGU" : "");
 
     return MaterialApp(
+      theme: ThemeData(useMaterial3: true),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("Results"),
+          title: const Center(child: Text("Results")),
         ),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 "gameStatus",
                 style: TextStyle(
                   color: Color.fromARGB(255, 237, 223, 252),
@@ -32,10 +33,10 @@ class Results extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               // Text("You've taken ${_formatDuration(stopwatch.elapsed)}!"),
-              // ElevatedButton(
-              //     onPressed: toAccueil,
-              //     child: const Text("Go Back")
-              // )
+              ElevatedButton(
+                  onPressed: (){toAccueil(context);},
+                  child: const Text("Go Back")
+              )
             ],
           ),
         ),
@@ -59,4 +60,8 @@ class Results extends StatelessWidget {
     return formattedDuration.trim();
   }
 
+
+  void toAccueil(context) {
+    Navigator.of(context).pop();
+  }
 }
