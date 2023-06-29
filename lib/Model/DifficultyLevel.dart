@@ -10,11 +10,7 @@ class DifficultyLevel {
   });
 }
 
-enum Difficulty{
-  easy,
-  intermediate,
-  expert
-}
+enum Difficulty { easy, intermediate, expert }
 
 extension DifficultyExtension on Difficulty {
   DifficultyLevel get difficultyLevel {
@@ -24,10 +20,9 @@ extension DifficultyExtension on Difficulty {
       case Difficulty.intermediate:
         return DifficultyLevel(level: "Intermediate", taille: 7, nbMines: 10);
       case Difficulty.expert:
-        return DifficultyLevel(level: "Expert", taille: 10, nbMines: 15);
+        return DifficultyLevel(level: "Expert", taille: 7, nbMines: 15);
       default:
         throw Exception('Invalid difficulty level');
     }
   }
 }
-

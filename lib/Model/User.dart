@@ -1,6 +1,6 @@
 import 'DifficultyLevel.dart';
 
-class User{
+class User {
   final String username;
   final int score;
   final int nbTimesPlayed;
@@ -27,5 +27,4 @@ class User{
       Difficulty.values.firstWhere((dif) => dif.name == json['difficulty']),
     );
   }
-
 }

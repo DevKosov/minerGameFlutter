@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tp02/Model/DifficultyLevel.dart';
@@ -6,24 +5,27 @@ import 'package:tp02/Model/modele.dart' as modele;
 import 'package:tp02/Provider/DifficultyProvider.dart';
 import '../Model/modele.dart';
 import '../Provider/UsersProvider.dart';
+import 'PotatoColorScheme.dart';
 import 'Results.dart';
 
 class MinerGrid extends ConsumerStatefulWidget {
-
   final String username;
 
   const MinerGrid({
-    super.key, required this.username,
+    super.key,
+    required this.username,
   });
 
-  void onFinishGame(BuildContext context,WidgetRef ref, int score) {
-
-    ref.read(usersProvider.notifier).addUser(username,score,ref.read(difficultyProvider));
+  void onFinishGame(
+      BuildContext context, WidgetRef ref, int score, Duration time) {
+    ref
+        .read(usersProvider.notifier)
+        .addUser(username, score, ref.read(difficultyProvider));
 
     Navigator.of(context).pop();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (ctx) => const Results(),
+        builder: (ctx) => Results(score: score, time: time),
       ),
     );
   }
@@ -32,7 +34,6 @@ class MinerGrid extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() {
     return _MinerGrid();
   }
-
 }
 
 // Riverpod : on hérite ici de ConsumerState
@@ -43,17 +44,22 @@ class _MinerGrid extends ConsumerState<MinerGrid> {
   @override
   void initState() {
     super.initState();
-    _grille = Grille(ref.read(difficultyProvider).difficultyLevel.taille, ref.read(difficultyProvider).difficultyLevel.nbMines);  // Initialization
+    _grille = Grille(ref.read(difficultyProvider).difficultyLevel.taille,
+        ref.read(difficultyProvider).difficultyLevel.nbMines); // Initialization
     _stopwatch.start();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(useMaterial3: true),
+        theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: potatoColors,
+            elevatedButtonTheme: minerButtonTheme),
         home: Scaffold(
             appBar: AppBar(
               title: const Center(child: Text("Play")),
+              backgroundColor: const Color.fromARGB(255, 251, 246, 239),
             ),
             body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,12 +75,12 @@ class _MinerGrid extends ConsumerState<MinerGrid> {
                             width: 50.0, // Set the desired width
                             height: 50.0, // Set the desired height
                             margin: const EdgeInsets.all(0.5),
-                            child:
-                            ElevatedButton(
+                            child: ElevatedButton(
                               onPressed: () {
                                 if (!_grille.isFinie()) {
                                   setState(() {
-                                    jouerCoup(context,x,y,modele.Action.decouvrir);
+                                    jouerCoup(
+                                        context, x, y, modele.Action.decouvrir);
                                   });
                                   isFinished();
                                 }
@@ -82,7 +88,8 @@ class _MinerGrid extends ConsumerState<MinerGrid> {
                               onLongPress: () {
                                 if (!_grille.isFinie()) {
                                   setState(() {
-                                    jouerCoup(context,x,y,modele.Action.marquer);
+                                    jouerCoup(
+                                        context, x, y, modele.Action.marquer);
                                   });
                                   isFinished();
                                 }
@@ -93,11 +100,9 @@ class _MinerGrid extends ConsumerState<MinerGrid> {
                                 // Background color
                                 padding: const EdgeInsets.all(10.0),
                               ),
-                              child: Text(
-                                  caseToText(
-                                      _grille.getCase(modele.Coordonnees(x, y)),
-                                      _grille.isFinie())
-                              ),
+                              child: Text(caseToText(
+                                  _grille.getCase(modele.Coordonnees(x, y)),
+                                  _grille.isFinie())),
                             ),
                           )
                         ],
@@ -106,57 +111,53 @@ class _MinerGrid extends ConsumerState<MinerGrid> {
                   ],
                   Container(
                     margin: const EdgeInsets.only(top: 20),
-                    child:
-                    const Text("Chose a case to mine!!!"),
+                    child: const Text("Chose a case to mine!!!"),
                   )
-                ]
-            )
-        )
-    );
+                ])));
   }
 
   String caseToText(modele.Case laCase, bool isFini) {
     if (!isFini) {
       if (laCase.decouverte) {
         return laCase.nbMinesAutour.toString();
-      }
-      else if (laCase.marquee) {
+      } else if (laCase.marquee) {
         return "🚩";
       } else {
         return "#";
       }
     } else {
-      return laCase.minee ? "💣" : laCase.nbMinesAutour == 0 ? "" : laCase
-          .nbMinesAutour.toString();
+      return laCase.minee
+          ? "💣"
+          : laCase.nbMinesAutour == 0
+              ? ""
+              : laCase.nbMinesAutour.toString();
     }
   }
 
   Color caseToColor(modele.Case laCase) {
     if (laCase.decouverte) {
       return Colors.grey;
-    }
-    else if (laCase.marquee) {
+    } else if (laCase.marquee) {
       return Colors.limeAccent;
-    }
-    else {
+    } else {
       return Colors.blueAccent;
     }
   }
 
-  void isFinished(){
+  void isFinished() {
     if (_grille.isGagnee()) {
       _stopwatch.stop();
-      widget.onFinishGame(context,ref,calculateScore(_stopwatch.elapsedMilliseconds));
+      widget.onFinishGame(context, ref,
+          calculateScore(_stopwatch.elapsedMilliseconds), _stopwatch.elapsed);
       _stopwatch.reset();
-    }
-    else if (_grille.isPerdue()){
+    } else if (_grille.isPerdue()) {
       _stopwatch.stop();
-      widget.onFinishGame(context,ref,0);
+      widget.onFinishGame(context, ref, 0, _stopwatch.elapsed);
       _stopwatch.reset();
     }
   }
 
-  void jouerCoup(context, x,y,action){
+  void jouerCoup(context, x, y, action) {
     Coup coup = Coup(x, y, action);
     _grille.mettreAJour(coup);
   }
@@ -164,10 +165,8 @@ class _MinerGrid extends ConsumerState<MinerGrid> {
   int calculateScore(timeInMilliseconds) {
     if (timeInMilliseconds <= 10000) {
       return 10000;
-    }
-    else{
-      return ((1000/timeInMilliseconds) * 10000).toInt();
+    } else {
+      return ((1000 / timeInMilliseconds) * 10000).toInt();
     }
   }
 }
-

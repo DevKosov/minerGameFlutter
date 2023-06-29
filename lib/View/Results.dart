@@ -1,48 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:tp02/Model/modele.dart';
 
-class Results extends StatelessWidget {
+import 'PotatoColorScheme.dart';
 
+class Results extends StatelessWidget {
+  final int score;
+  final Duration time;
   // Constructeur
-  const Results({
-    super.key,
-  });
+  const Results({super.key, required this.score, required this.time});
 
   // Construction de l'UI du Widget StartScreen
   @override
   Widget build(context) {
-
-    // String gameStatus = grille.isPerdue() ? "$username, you're so BAAAAD!" : (grille.isGagnee() ? "${username}, you've WON!!! POGU" : "");
+    String gameStatus = (score == 0 ? "Game Over!" : "WINNER!!");
 
     return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Center(child: Text("Results")),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "gameStatus",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 237, 223, 252),
-                  fontSize: 24,
-                ),
-              ),
-              const SizedBox(height: 30),
-              // Text("You've taken ${_formatDuration(stopwatch.elapsed)}!"),
-              ElevatedButton(
-                  onPressed: (){toAccueil(context);},
-                  child: const Text("Go Back")
-              )
-            ],
+        theme: ThemeData(useMaterial3: true, colorScheme: potatoColors),
+        home: Scaffold(
+          appBar: AppBar(
+            title: const Center(child: Text("Results")),
+            backgroundColor: const Color.fromARGB(255, 251, 246, 239),
           ),
-        ),
-      )
-    );
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  gameStatus,
+                  style: const TextStyle(
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Text("Score of $score!"),
+                Text("Time elapsed : ${_formatDuration(time)} seconds"),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                    onPressed: () {
+                      toAccueil(context);
+                    },
+                    child: const Text("Go Back"))
+              ],
+            ),
+          ),
+        ));
   }
+
   String _formatDuration(Duration duration) {
     int hours = duration.inHours;
     int minutes = duration.inMinutes.remainder(60);
@@ -59,7 +62,6 @@ class Results extends StatelessWidget {
 
     return formattedDuration.trim();
   }
-
 
   void toAccueil(context) {
     Navigator.of(context).pop();

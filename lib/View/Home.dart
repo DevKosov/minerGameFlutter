@@ -6,32 +6,27 @@ import 'package:tp02/Provider/UsersProvider.dart';
 
 import '../Model/User.dart';
 import 'MinerGrid.dart';
-
+import 'PotatoColorScheme.dart';
 
 class Home extends ConsumerStatefulWidget {
   // Constructeur
-  Home({
-    super.key
-  });
+  Home({super.key});
 
   void play(BuildContext context, WidgetRef ref, String username) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (ctx) =>
-            MinerGrid(
-              username : username
-            ),
+        builder: (ctx) => MinerGrid(username: username),
       ),
     );
   }
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
     return _Home();
   }
-
 }
-class _Home extends ConsumerState<Home> {
 
+class _Home extends ConsumerState<Home> {
   late String _username;
   final _textController = TextEditingController();
   late Difficulty _selectedDifficulty;
@@ -45,80 +40,122 @@ class _Home extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
-
     _selectedDifficulty = ref.watch(difficultyProvider);
     _top3 = ref.watch(usersProviderTop3(_selectedDifficulty));
 
     return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Center(child: Text("Demineur")),
+        theme: ThemeData(
+          elevatedButtonTheme: elevatedButtonTheme,
+          useMaterial3: true,
+          colorScheme: potatoColors,
         ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Miner Game',
+        home: Scaffold(
+            appBar: AppBar(
+              title: const Center(
+                  child: Text(
+                "Miner Game",
                 style: TextStyle(
-                  color: Color.fromARGB(255, 237, 223, 252),
+                  fontWeight: FontWeight.bold,
                   fontSize: 24,
                 ),
-              ),
-              // ListView(
-              //   children: [
-              //     for (var user in _top3) Card(child:ListTile(title:Text("${user.username} : ${user.score}")))
-              //   ],
-              // ),
-              Column(
-                  children: [
-                    for (var user in _top3) Text("${user.username} : ${user.score}")
-                  ],
-                ),
-              const SizedBox(height: 30),
-              TextField(
-                controller: _textController,
-                keyboardType: TextInputType.text,
-                maxLength: 40,
-                decoration: const InputDecoration(
-                  suffixText: '',
-                  label: Text('Username'),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _username = value;
-                  });
-                },
-              ),
-              DropdownButton(
-                value: _selectedDifficulty,
-
-                items: Difficulty.values.map((difficulty) =>
-                    DropdownMenuItem<Difficulty>(
-                      value: difficulty,
-                      child: Text(
-                        difficulty.difficultyLevel.level.toString().toUpperCase(),
+              )),
+              backgroundColor: const Color.fromARGB(255, 251, 246, 239),
+            ),
+            body: Center(
+                child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 768),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'Top 3 players in ',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 18,
+                                    color: Colors.black),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: _selectedDifficulty
+                                          .difficultyLevel.level,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18)),
+                                  const TextSpan(
+                                      text: ' mode',
+                                      style: TextStyle(fontSize: 18)),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            SizedBox(
+                              height: 240, // provide a suitable height
+                              child: ListView(
+                                physics: const NeverScrollableScrollPhysics(),
+                                children: [
+                                  for (var user in _top3)
+                                    Card(
+                                        child: ListTile(
+                                            title: Text(user.username),
+                                            subtitle: Text(
+                                                "${user.nbTimesPlayed} ${user.nbTimesPlayed > 1 ? "times" : "time"} played!"),
+                                            trailing: Text("${user.score}")))
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            TextField(
+                              controller: _textController,
+                              keyboardType: TextInputType.text,
+                              maxLength: 20,
+                              decoration: const InputDecoration(
+                                suffixText: '',
+                                label: Text('Username'),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _username = value;
+                                });
+                              },
+                            ),
+                            DropdownButton(
+                              value: _selectedDifficulty,
+                              items: Difficulty.values
+                                  .map(
+                                    (difficulty) =>
+                                        DropdownMenuItem<Difficulty>(
+                                      value: difficulty,
+                                      child: Text(
+                                        difficulty.difficultyLevel.level
+                                            .toString()
+                                            .toUpperCase(),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value == null) {
+                                  return;
+                                }
+                                ref
+                                    .read(difficultyProvider.notifier)
+                                    .changeDifficulty(value);
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            ElevatedButton(
+                                onPressed: _username.isEmpty
+                                    ? null
+                                    : () {
+                                        widget.play(context, ref, _username);
+                                      },
+                                child: const Text("Play")),
+                          ],
+                        ),
                       ),
-                    ),
-                ).toList(),
-                onChanged: (value) {
-                  if (value == null) {
-                    return ;
-                  }
-                  ref.read(difficultyProvider.notifier).changeDifficulty(value);
-                },
-              ),
-              ElevatedButton(
-                  onPressed: _username.isEmpty ? null : () {
-                    widget.play(context,ref,_username);
-                  },
-                  child: const Text("Play")
-              ),
-            ],
-          ),
-        ),
-      )
-    );
+                    )))));
   }
 }
